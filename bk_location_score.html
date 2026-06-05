@@ -1,0 +1,1582 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BK Location Score — Piemonte Analysis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  --bk-red: #CC2200;
+  --bk-orange: #E8460A;
+  --bk-gold: #F5A623;
+  --ink: #0F0E0D;
+  --ink2: #3A3835;
+  --ink3: #7A7570;
+  --paper: #FAFAF7;
+  --paper2: #F2F1EC;
+  --paper3: #E8E6DF;
+  --white: #FFFFFF;
+  --positive: #1A7A4A;
+  --negative: #CC2200;
+  --neutral: #7A7570;
+  --border: rgba(15,14,13,0.1);
+  --shadow: 0 1px 3px rgba(15,14,13,0.06), 0 4px 16px rgba(15,14,13,0.04);
+  --shadow-lg: 0 2px 8px rgba(15,14,13,0.08), 0 12px 40px rgba(15,14,13,0.08);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* ── HEADER ─────────────────────────────────────────────── */
+.site-header {
+  background: var(--ink);
+  color: var(--white);
+  padding: 0 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 2px solid var(--bk-orange);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-badge {
+  width: 32px; height: 32px;
+  background: var(--bk-orange);
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif;
+  font-weight: 800; font-size: 14px;
+  color: white; letter-spacing: -0.5px;
+}
+
+.logo-text {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700; font-size: 15px;
+  letter-spacing: -0.2px;
+  color: white;
+}
+
+.logo-text span { color: var(--bk-gold); }
+
+nav { display: flex; gap: 2px; }
+nav a {
+  color: rgba(255,255,255,0.55);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 400;
+  padding: 6px 14px;
+  border-radius: 5px;
+  transition: all 0.15s;
+  letter-spacing: 0.1px;
+}
+nav a:hover { color: white; background: rgba(255,255,255,0.08); }
+nav a.active { color: white; }
+
+.header-tag {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--bk-gold);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  border: 1px solid rgba(245,166,35,0.3);
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+/* ── LAYOUT ──────────────────────────────────────────────── */
+.page-wrap { max-width: 1240px; margin: 0 auto; padding: 0 48px; }
+
+section { padding: 64px 0; }
+section + section { border-top: 1px solid var(--border); }
+
+.section-label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--bk-orange);
+  margin-bottom: 8px;
+}
+
+.section-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.2;
+  margin-bottom: 6px;
+  letter-spacing: -0.5px;
+}
+
+.section-sub {
+  font-size: 14px;
+  color: var(--ink3);
+  font-weight: 300;
+  max-width: 560px;
+  margin-bottom: 36px;
+}
+
+/* ── HERO ────────────────────────────────────────────────── */
+.hero {
+  background: var(--ink);
+  color: white;
+  padding: 80px 0 72px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 800px 600px at 70% 50%, rgba(232,70,10,0.12) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 80px;
+  align-items: center;
+}
+
+.hero-eyebrow {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--bk-gold);
+  margin-bottom: 16px;
+}
+
+.hero-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 52px;
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -2px;
+  margin-bottom: 20px;
+}
+
+.hero-title span { color: var(--bk-orange); }
+
+.hero-desc {
+  font-size: 16px;
+  font-weight: 300;
+  color: rgba(255,255,255,0.6);
+  line-height: 1.7;
+  max-width: 520px;
+  margin-bottom: 40px;
+}
+
+.hero-stats {
+  display: flex;
+  gap: 40px;
+}
+
+.hero-stat-val {
+  font-family: 'Syne', sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  color: white;
+  letter-spacing: -1px;
+}
+
+.hero-stat-label {
+  font-size: 12px;
+  color: rgba(255,255,255,0.4);
+  font-weight: 300;
+  margin-top: 2px;
+  letter-spacing: 0.5px;
+}
+
+.hero-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 16px;
+  padding: 28px;
+}
+
+.hero-card-title {
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.35);
+  margin-bottom: 20px;
+}
+
+.key-finding {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.key-finding:last-child { border-bottom: none; padding-bottom: 0; }
+.key-finding:first-of-type { padding-top: 0; }
+
+.kf-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  margin-top: 5px;
+  flex-shrink: 0;
+}
+
+.kf-dot.orange { background: var(--bk-orange); }
+.kf-dot.gold { background: var(--bk-gold); }
+.kf-dot.gray { background: rgba(255,255,255,0.2); }
+
+.kf-text { font-size: 13px; font-weight: 300; color: rgba(255,255,255,0.7); line-height: 1.5; }
+.kf-text strong { color: white; font-weight: 500; }
+
+/* ── KPI STRIP ───────────────────────────────────────────── */
+.kpi-strip {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 48px;
+}
+
+.kpi-card {
+  background: var(--white);
+  padding: 24px 20px;
+}
+
+.kpi-label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--ink3);
+  margin-bottom: 8px;
+}
+
+.kpi-value {
+  font-family: 'Syne', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -1px;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.kpi-value.accent { color: var(--bk-orange); }
+
+.kpi-sub {
+  font-size: 12px;
+  color: var(--ink3);
+  font-weight: 300;
+}
+
+/* ── CHARTS GRID ─────────────────────────────────────────── */
+.charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.charts-grid-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 20px;
+}
+
+.chart-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: var(--shadow);
+}
+
+.chart-card.full { grid-column: 1 / -1; }
+
+.chart-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 4px;
+  letter-spacing: -0.2px;
+}
+
+.chart-sub {
+  font-size: 12px;
+  color: var(--ink3);
+  font-weight: 300;
+  margin-bottom: 20px;
+}
+
+.chart-wrap { position: relative; }
+
+/* ── TABLE ───────────────────────────────────────────────── */
+.table-wrap {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+.table-toolbar {
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+}
+
+.table-toolbar-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.table-search {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--ink);
+  background: var(--paper);
+  outline: none;
+  width: 200px;
+  transition: border-color 0.15s;
+}
+
+.table-search:focus { border-color: var(--bk-orange); }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+thead th {
+  padding: 10px 16px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--ink3);
+  background: var(--paper2);
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+
+thead th:hover { background: var(--paper3); color: var(--ink); }
+
+tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background 0.1s;
+}
+
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: var(--paper2); }
+
+tbody td {
+  padding: 12px 16px;
+  vertical-align: middle;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+.badge-proximity { background: #E8F4ED; color: #1A6B3C; }
+.badge-mall { background: #E8EFF8; color: #1A4A8C; }
+.badge-highline { background: #F5EDE8; color: #8C3A1A; }
+.badge-yes { background: #FFF0E6; color: #A83500; }
+.badge-no { background: var(--paper2); color: var(--ink3); }
+
+.score-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Syne', sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.score-bar-mini {
+  width: 48px; height: 4px;
+  background: var(--paper3);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.score-bar-mini-fill {
+  height: 100%;
+  border-radius: 2px;
+}
+
+/* ── REGRESSION ──────────────────────────────────────────── */
+.reg-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.coef-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.coef-row:last-child { border-bottom: none; }
+
+.coef-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink);
+  width: 140px;
+  flex-shrink: 0;
+}
+
+.coef-bar-track {
+  flex: 1;
+  height: 6px;
+  background: var(--paper2);
+  border-radius: 3px;
+  position: relative;
+  overflow: visible;
+}
+
+.coef-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.coef-val {
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  width: 64px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.sig-tag {
+  font-size: 10px;
+  font-weight: 500;
+  padding: 2px 7px;
+  border-radius: 10px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.sig-yes { background: #E8F4ED; color: #1A6B3C; }
+.sig-no { background: var(--paper2); color: var(--ink3); }
+
+.model-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.model-stat {
+  background: var(--paper2);
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.model-stat-label {
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--ink3);
+  margin-bottom: 6px;
+}
+
+.model-stat-val {
+  font-family: 'Syne', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -0.5px;
+}
+
+.model-stat-note {
+  font-size: 11px;
+  color: var(--ink3);
+  margin-top: 3px;
+  font-weight: 300;
+}
+
+/* ── FINDING BANNER ──────────────────────────────────────── */
+.finding-banner {
+  background: var(--ink);
+  border-radius: 16px;
+  padding: 40px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 40px;
+  align-items: center;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.finding-banner::after {
+  content: '';
+  position: absolute;
+  right: -60px; top: -60px;
+  width: 300px; height: 300px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(232,70,10,0.15) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.finding-eyebrow {
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--bk-gold);
+  margin-bottom: 10px;
+}
+
+.finding-headline {
+  font-family: 'Syne', sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+  color: white;
+  letter-spacing: -0.5px;
+  line-height: 1.25;
+  margin-bottom: 12px;
+}
+
+.finding-headline span { color: var(--bk-orange); }
+
+.finding-text {
+  font-size: 14px;
+  font-weight: 300;
+  color: rgba(255,255,255,0.55);
+  line-height: 1.7;
+  max-width: 480px;
+}
+
+.finding-metric {
+  text-align: center;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 28px 36px;
+}
+
+.finding-metric-val {
+  font-family: 'Syne', sans-serif;
+  font-size: 52px;
+  font-weight: 800;
+  color: var(--bk-orange);
+  letter-spacing: -2px;
+  line-height: 1;
+  display: block;
+}
+
+.finding-metric-unit {
+  font-size: 12px;
+  color: rgba(255,255,255,0.4);
+  margin-top: 6px;
+  letter-spacing: 0.5px;
+}
+
+/* ── SCORE TOOL ──────────────────────────────────────────── */
+.score-tool {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 40px;
+  box-shadow: var(--shadow-lg);
+}
+
+.score-tool-grid {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 48px;
+  align-items: start;
+}
+
+.score-inputs { display: flex; flex-direction: column; gap: 20px; }
+
+.input-group label {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--ink3);
+  margin-bottom: 8px;
+}
+
+.input-group select,
+.input-group input[type="range"] {
+  width: 100%;
+}
+
+.styled-select {
+  appearance: none;
+  background: var(--paper2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 11px 16px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  color: var(--ink);
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.15s;
+  background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%237A7570' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 36px;
+}
+
+.styled-select:focus { border-color: var(--bk-orange); }
+
+.toggle-group {
+  display: flex;
+  gap: 0;
+  background: var(--paper2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.toggle-btn {
+  flex: 1;
+  padding: 10px 16px;
+  border: none;
+  background: transparent;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  color: var(--ink3);
+  cursor: pointer;
+  transition: all 0.15s;
+  font-weight: 400;
+}
+
+.toggle-btn.active {
+  background: var(--ink);
+  color: white;
+  font-weight: 500;
+}
+
+.range-wrap { position: relative; }
+
+input[type="range"] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 4px;
+  background: var(--paper3);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: var(--ink);
+  border: 2px solid white;
+  box-shadow: 0 0 0 1px var(--border);
+  cursor: pointer;
+}
+
+.range-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--ink3);
+  margin-top: 6px;
+}
+
+.range-val {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink);
+  text-align: right;
+  margin-bottom: 6px;
+}
+
+/* Score display */
+.score-display {
+  position: sticky;
+  top: 88px;
+}
+
+.score-circle-wrap {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.score-canvas-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+#scoreCanvas { display: block; }
+
+.score-number {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.score-num-val {
+  font-family: 'Syne', sans-serif;
+  font-size: 48px;
+  font-weight: 800;
+  letter-spacing: -2px;
+  line-height: 1;
+  transition: color 0.4s;
+}
+
+.score-num-label {
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--ink3);
+  margin-top: 4px;
+}
+
+.score-rating {
+  font-family: 'Syne', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.score-breakdown { display: flex; flex-direction: column; gap: 10px; }
+
+.sb-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+}
+
+.sb-label { color: var(--ink3); font-weight: 400; }
+
+.sb-val {
+  font-weight: 600;
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+}
+
+.estimate-box {
+  background: var(--paper2);
+  border-radius: 10px;
+  padding: 16px;
+  margin-top: 16px;
+}
+
+.estimate-label {
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--ink3);
+  margin-bottom: 6px;
+}
+
+.estimate-val {
+  font-family: 'Syne', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -0.5px;
+}
+
+.estimate-sub { font-size: 11px; color: var(--ink3); margin-top: 3px; }
+
+/* ── FOOTER ──────────────────────────────────────────────── */
+footer {
+  background: var(--ink);
+  color: rgba(255,255,255,0.4);
+  text-align: center;
+  padding: 32px 48px;
+  font-size: 12px;
+  font-weight: 300;
+  letter-spacing: 0.3px;
+}
+
+footer strong { color: rgba(255,255,255,0.7); font-weight: 400; }
+
+/* ── ANIMATIONS ──────────────────────────────────────────── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.fade-up {
+  animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.fade-up-1 { animation-delay: 0.05s; }
+.fade-up-2 { animation-delay: 0.12s; }
+.fade-up-3 { animation-delay: 0.19s; }
+.fade-up-4 { animation-delay: 0.26s; }
+
+/* ── RESPONSIVE TWEAKS ───────────────────────────────────── */
+@media (max-width: 900px) {
+  .page-wrap { padding: 0 24px; }
+  .site-header { padding: 0 24px; }
+  .hero-grid, .reg-grid, .score-tool-grid { grid-template-columns: 1fr; }
+  .hero { padding: 48px 0; }
+  .hero-title { font-size: 36px; }
+  .kpi-strip { grid-template-columns: repeat(2, 1fr); }
+  .charts-grid, .charts-grid-3 { grid-template-columns: 1fr; }
+  nav { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="site-header">
+  <div class="logo">
+    <div class="logo-badge">BK</div>
+    <div class="logo-text"><span>Location</span> Score</div>
+  </div>
+  <nav>
+    <a href="#overview" class="active">Overview</a>
+    <a href="#dataset">Dataset</a>
+    <a href="#analysis">Analisi</a>
+    <a href="#regression">Regressione</a>
+    <a href="#scorer">Scorer</a>
+  </nav>
+  <div class="header-tag">Piemonte · 28 locations</div>
+</header>
+
+<!-- HERO -->
+<section class="hero" id="overview">
+  <div class="page-wrap">
+    <div class="hero-grid">
+      <div class="fade-up">
+        <div class="hero-eyebrow">Tesi di Laurea · Analisi Empirica</div>
+        <h1 class="hero-title">Cosa guida<br>la <span>performance</span><br>di un BK?</h1>
+        <p class="hero-desc">Un'analisi empirica dei determinanti della performance di 28 punti vendita Burger King in Piemonte, basata su dati Google, demografici e caratteristiche di location.</p>
+        <div class="hero-stats">
+          <div>
+            <div class="hero-stat-val">28</div>
+            <div class="hero-stat-label">Punti vendita</div>
+          </div>
+          <div>
+            <div class="hero-stat-val">r=0.61</div>
+            <div class="hero-stat-label">Drive-thru correlation</div>
+          </div>
+          <div>
+            <div class="hero-stat-val">R²=0.32</div>
+            <div class="hero-stat-label">Modello OLS</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-card fade-up fade-up-2">
+        <div class="hero-card-title">Key Findings</div>
+        <div class="key-finding">
+          <div class="kf-dot orange"></div>
+          <div class="kf-text"><strong>Drive-thru è il fattore più forte</strong> — i locali con drive aggiungono in media +1.395 recensioni (p=0.014)</div>
+        </div>
+        <div class="key-finding">
+          <div class="kf-dot gold"></div>
+          <div class="kf-text"><strong>High-Street soffre</strong> — i locali in centro città raccolgono 2× meno recensioni dei Proximity</div>
+        </div>
+        <div class="key-finding">
+          <div class="kf-dot gray"></div>
+          <div class="kf-text"><strong>La popolazione conta poco</strong> — la correlazione è debole (r=0.33), la posizione batte il bacino</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DATASET -->
+<section id="dataset">
+  <div class="page-wrap">
+    <div class="section-label">01 — Dataset</div>
+    <h2 class="section-title">I 28 punti vendita</h2>
+    <p class="section-sub">Dataset pulito con variabili di location, tipologia, drive-thru, popolazione e Location Score calcolato.</p>
+
+    <div class="kpi-strip fade-up">
+      <div class="kpi-card">
+        <div class="kpi-label">Totale locations</div>
+        <div class="kpi-value">28</div>
+        <div class="kpi-sub">Piemonte</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Con drive-thru</div>
+        <div class="kpi-value accent">11</div>
+        <div class="kpi-sub">39% del totale</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Rec. media</div>
+        <div class="kpi-value">1.471</div>
+        <div class="kpi-sub">per locale</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Rec. mediana</div>
+        <div class="kpi-value">1.306</div>
+        <div class="kpi-sub">distribuzione skewed</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Top performer</div>
+        <div class="kpi-value accent">5.872</div>
+        <div class="kpi-sub">Rivoli</div>
+      </div>
+    </div>
+
+    <div class="table-wrap fade-up fade-up-2">
+      <div class="table-toolbar">
+        <div class="table-toolbar-title">Dati completi — ordinabili per colonna</div>
+        <input type="text" class="table-search" placeholder="Cerca location…" id="tableSearch">
+      </div>
+      <div style="overflow-x:auto">
+        <table id="dataTable">
+          <thead>
+            <tr>
+              <th onclick="sortTable(0)">Location ↕</th>
+              <th onclick="sortTable(1)">Recensioni ↕</th>
+              <th onclick="sortTable(2)">Tipo</th>
+              <th onclick="sortTable(3)">Drive-thru</th>
+              <th onclick="sortTable(4)">Pop. Pond. ↕</th>
+              <th onclick="sortTable(5)">Location Score ↕</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ANALYSIS -->
+<section id="analysis">
+  <div class="page-wrap">
+    <div class="section-label">02 — Analisi Esplorativa</div>
+    <h2 class="section-title">Distribuzione e pattern</h2>
+    <p class="section-sub">Visualizzazioni esplorative delle recensioni per location, tipologia e presenza di drive-thru.</p>
+
+    <div class="charts-grid fade-up">
+      <div class="chart-card full">
+        <div class="chart-title">Recensioni Google per punto vendita</div>
+        <div class="chart-sub">Ordinati per numero di recensioni. Arancio = sopra la mediana (1.306).</div>
+        <div class="chart-wrap" style="height:320px">
+          <canvas id="chartBar"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="charts-grid-3 fade-up fade-up-2">
+      <div class="chart-card">
+        <div class="chart-title">Drive-thru vs Senza</div>
+        <div class="chart-sub">Recensioni medie per categoria</div>
+        <div class="chart-wrap" style="height:220px">
+          <canvas id="chartDrive"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Recensioni per tipo</div>
+        <div class="chart-sub">Proximity / Mall / High-Line</div>
+        <div class="chart-wrap" style="height:220px">
+          <canvas id="chartType"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Pop. Ponderata → Recensioni</div>
+        <div class="chart-sub">Correlazione r = 0.33</div>
+        <div class="chart-wrap" style="height:220px">
+          <canvas id="chartScatter"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REGRESSION -->
+<section id="regression">
+  <div class="page-wrap">
+    <div class="section-label">03 — Regressione</div>
+    <h2 class="section-title">Il modello OLS</h2>
+    <p class="section-sub">Regressione lineare multipla: variabile dipendente = Recensioni Google. Variabili indipendenti: Drive-thru, Tipo locale, Popolazione ponderata.</p>
+
+    <div class="finding-banner fade-up">
+      <div>
+        <div class="finding-eyebrow">Finding principale</div>
+        <div class="finding-headline">Il Drive-Thru è l'unico predittore<br><span>statisticamente significativo</span></div>
+        <div class="finding-text">Con un p-value di 0.014, la presenza del drive-thru è l'unico fattore che possiamo affermare con sicurezza statistica avere un effetto positivo sul numero di recensioni — e quindi sul traffico del locale.</div>
+      </div>
+      <div class="finding-metric">
+        <span class="finding-metric-val">+1.395</span>
+        <div class="finding-metric-unit">recensioni aggiuntive<br>stimate dal modello</div>
+      </div>
+    </div>
+
+    <div class="reg-grid fade-up fade-up-2">
+      <div class="chart-card">
+        <div class="chart-title">Coefficienti del modello</div>
+        <div class="chart-sub">Effetto stimato su numero di recensioni (categoria base: Proximity, no Drive-thru)</div>
+        <div style="margin-top:8px">
+          <div class="coef-row">
+            <div class="coef-name">Intercetta</div>
+            <div class="coef-bar-track">
+              <div class="coef-bar-fill" style="width:18%;background:var(--paper3)"></div>
+            </div>
+            <div class="coef-val" style="color:var(--ink3)">+452</div>
+            <div class="sig-tag sig-no">n.s.</div>
+          </div>
+          <div class="coef-row">
+            <div class="coef-name">Drive-Thru ✓</div>
+            <div class="coef-bar-track">
+              <div class="coef-bar-fill" style="width:100%;background:var(--bk-orange)"></div>
+            </div>
+            <div class="coef-val" style="color:var(--bk-orange)">+1.395</div>
+            <div class="sig-tag sig-yes">p = 0.014</div>
+          </div>
+          <div class="coef-row">
+            <div class="coef-name">Tipo Mall</div>
+            <div class="coef-bar-track">
+              <div class="coef-bar-fill" style="width:3%;background:var(--paper3)"></div>
+            </div>
+            <div class="coef-val" style="color:var(--ink3)">+37</div>
+            <div class="sig-tag sig-no">p = 0.961</div>
+          </div>
+          <div class="coef-row">
+            <div class="coef-name">Tipo High-Line</div>
+            <div class="coef-bar-track">
+              <div class="coef-bar-fill" style="width:27%;background:#FCDAD5"></div>
+            </div>
+            <div class="coef-val" style="color:var(--bk-red)">−377</div>
+            <div class="sig-tag sig-no">p = 0.596</div>
+          </div>
+          <div class="coef-row">
+            <div class="coef-name">Pop. Ponderata</div>
+            <div class="coef-bar-track">
+              <div class="coef-bar-fill" style="width:8%;background:var(--paper3)"></div>
+            </div>
+            <div class="coef-val" style="color:var(--ink3)">+0.007</div>
+            <div class="sig-tag sig-no">p = 0.212</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:20px">
+        <div class="chart-card">
+          <div class="chart-title">Bontà del modello</div>
+          <div class="chart-sub">Metriche OLS — N=28</div>
+          <div class="model-stats">
+            <div class="model-stat">
+              <div class="model-stat-label">R²</div>
+              <div class="model-stat-val">0.323</div>
+              <div class="model-stat-note">Varianza spiegata</div>
+            </div>
+            <div class="model-stat">
+              <div class="model-stat-label">R² adj</div>
+              <div class="model-stat-val">0.205</div>
+              <div class="model-stat-note">Corretto per k</div>
+            </div>
+            <div class="model-stat">
+              <div class="model-stat-label">F p-val</div>
+              <div class="model-stat-val">0.053</div>
+              <div class="model-stat-note">Marginale</div>
+            </div>
+            <div class="model-stat">
+              <div class="model-stat-label">RMSE</div>
+              <div class="model-stat-val">1.085</div>
+              <div class="model-stat-note">Errore medio</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-title">Valori reali vs previsti</div>
+          <div class="chart-sub">R² = 0.32</div>
+          <div class="chart-wrap" style="height:160px">
+            <canvas id="chartResidual"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chart-card fade-up fade-up-3" style="padding:28px 32px">
+      <div class="chart-title" style="margin-bottom:16px">Come leggere i risultati — in linguaggio business</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px">
+        <div>
+          <div style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--bk-orange);margin-bottom:8px">Drive-thru ★★★★</div>
+          <div style="font-size:13px;color:var(--ink2);line-height:1.6;font-weight:300">Un locale con drive-thru accumula in media <strong>+1.395 recensioni</strong> rispetto a uno senza. Con IC 95% tra +313 e +2.477 — l'effetto è reale e sostanziale.</div>
+        </div>
+        <div>
+          <div style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink3);margin-bottom:8px">Tipo locale ★★</div>
+          <div style="font-size:13px;color:var(--ink2);line-height:1.6;font-weight:300">La differenza esiste nella direzione attesa (High-Line peggio dei Mall), ma con 28 osservazioni il campione è troppo piccolo per essere certi. Serve più dati.</div>
+        </div>
+        <div>
+          <div style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink3);margin-bottom:8px">Popolazione ★</div>
+          <div style="font-size:13px;color:var(--ink2);line-height:1.6;font-weight:300">L'effetto è quasi zero nel modello multivariato. Avere più abitanti nelle vicinanze non basta: conta di più l'accessibilità del punto vendita.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SCORER -->
+<section id="scorer">
+  <div class="page-wrap">
+    <div class="section-label">04 — Location Scorer</div>
+    <h2 class="section-title">Calcola il Location Score</h2>
+    <p class="section-sub">Inserisci le caratteristiche di un potenziale punto vendita per ottenere uno score da 0 a 100 basato sui risultati empirici.</p>
+
+    <div class="score-tool fade-up">
+      <div class="score-tool-grid">
+        <div>
+          <div class="score-inputs">
+            <div class="input-group">
+              <label>Tipo di location</label>
+              <select class="styled-select" id="inpType" onchange="calcScore()">
+                <option value="proximity">Proximity (fuori città, retail park)</option>
+                <option value="mall">Mall (centro commerciale)</option>
+                <option value="highline">High-Line (centro città / high-street)</option>
+              </select>
+            </div>
+
+            <div class="input-group">
+              <label>Drive-thru disponibile?</label>
+              <div class="toggle-group">
+                <button class="toggle-btn active" id="driveYes" onclick="setDrive('yes')">Sì, con drive-thru</button>
+                <button class="toggle-btn" id="driveNo" onclick="setDrive('no')">No, solo walk-in</button>
+              </div>
+            </div>
+
+            <div class="input-group">
+              <label>Popolazione ponderata nel raggio 8km</label>
+              <div class="range-val" id="popLabel">60.000 abitanti</div>
+              <div class="range-wrap">
+                <input type="range" id="inpPop" min="25000" max="220000" step="5000" value="60000" oninput="updatePopLabel();calcScore()">
+                <div class="range-labels"><span>25k</span><span>220k</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top:28px;padding:20px;background:var(--paper2);border-radius:10px">
+            <div style="font-size:12px;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:var(--ink3);margin-bottom:12px">Come si calcola lo score</div>
+            <div style="font-size:13px;color:var(--ink2);line-height:1.7;font-weight:300">
+              Lo score combina tre componenti basate sull'analisi empirica:<br>
+              <strong>Drive-thru (55 punti)</strong> — il fattore più potente (β=+1.395, p=0.014).<br>
+              <strong>Tipo locale (30 punti)</strong> — Proximity=30, Mall=20, High-Line=8.<br>
+              <strong>Popolazione (15 punti)</strong> — scala lineare 25k→220k.
+            </div>
+          </div>
+        </div>
+
+        <div class="score-display">
+          <div class="score-circle-wrap">
+            <div class="score-canvas-wrap">
+              <canvas id="scoreCanvas" width="220" height="220"></canvas>
+              <div class="score-number">
+                <div class="score-num-val" id="scoreVal">72</div>
+                <div class="score-num-label">/ 100</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="score-rating" id="scoreRating" style="color:var(--bk-orange)">Buona location</div>
+
+          <div class="score-breakdown">
+            <div class="sb-row">
+              <span class="sb-label">Drive-thru</span>
+              <span class="sb-val" id="sbDrive">+55 pts</span>
+            </div>
+            <div class="sb-row">
+              <span class="sb-label">Tipo locale</span>
+              <span class="sb-val" id="sbType">+30 pts</span>
+            </div>
+            <div class="sb-row">
+              <span class="sb-label">Popolazione</span>
+              <span class="sb-val" id="sbPop">+7 pts</span>
+            </div>
+          </div>
+
+          <div class="estimate-box">
+            <div class="estimate-label">Recensioni stimate</div>
+            <div class="estimate-val" id="estReviews">~1.970</div>
+            <div class="estimate-sub">Stima empirica dal modello OLS</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <strong>BK Location Score</strong> · Analisi empirica Burger King Piemonte · Tesi di Laurea Triennale<br>
+  <span style="margin-top:6px;display:block">Dati: Google Maps · Modello: OLS · N=28 · R²=0.323</span>
+</footer>
+
+<script>
+// ── DATA ─────────────────────────────────────────────────────
+const DATA = [
+  {location:"Rivoli",reviews:5872,type:"Proximity",drive:"Yes",pop_w:180000},
+  {location:"Collegno",reviews:558,type:"Proximity",drive:"Yes",pop_w:180000},
+  {location:"Torino Corso Novara",reviews:1325,type:"High - Line",drive:"No",pop_w:85000},
+  {location:"Nichelino",reviews:2576,type:"Mall",drive:"No",pop_w:180000},
+  {location:"Torino Area 12",reviews:556,type:"Mall",drive:"No",pop_w:180000},
+  {location:"Torino Lingotto",reviews:364,type:"Mall",drive:"No",pop_w:180000},
+  {location:"Torino Madama Cristina",reviews:202,type:"High - Line",drive:"No",pop_w:85000},
+  {location:"Torino Parco Dora",reviews:2636,type:"Mall",drive:"No",pop_w:180000},
+  {location:"Torino Pietro Micca",reviews:458,type:"High - Line",drive:"No",pop_w:85000},
+  {location:"Moncalieri",reviews:3372,type:"Proximity",drive:"Yes",pop_w:66890},
+  {location:"Torino Univ. ALDO MORO",reviews:1607,type:"High - Line",drive:"No",pop_w:85000},
+  {location:"Torino Corso Romania",reviews:89,type:"High - Line",drive:"No",pop_w:220000},
+  {location:"Torino Caselle",reviews:2270,type:"Proximity",drive:"Yes",pop_w:29540},
+  {location:"Settimo Torinese",reviews:3603,type:"Proximity",drive:"Yes",pop_w:56120},
+  {location:"Chieri",reviews:308,type:"Proximity",drive:"Yes",pop_w:43190},
+  {location:"San Rocco Sud",reviews:250,type:"Proximity",drive:"No",pop_w:33145},
+  {location:"Alba",reviews:223,type:"Proximity",drive:"No",pop_w:47110},
+  {location:"Ivrea",reviews:53,type:"Proximity",drive:"No",pop_w:40125},
+  {location:"Asti",reviews:1691,type:"Proximity",drive:"Yes",pop_w:59840},
+  {location:"Pinerolo",reviews:1135,type:"Proximity",drive:"No",pop_w:50287},
+  {location:"Biella",reviews:2062,type:"Proximity",drive:"No",pop_w:56437},
+  {location:"Casale Monferrato",reviews:1685,type:"Proximity",drive:"Yes",pop_w:46210},
+  {location:"Mondovì",reviews:732,type:"Proximity",drive:"No",pop_w:37912},
+  {location:"Alessandria",reviews:2300,type:"Proximity",drive:"Yes",pop_w:81245},
+  {location:"Borgomanero",reviews:168,type:"Proximity",drive:"No",pop_w:39921},
+  {location:"Novara",reviews:1600,type:"Proximity",drive:"No",pop_w:123122},
+  {location:"Saluzzo",reviews:1287,type:"Proximity",drive:"Yes",pop_w:27430},
+  {location:"Serravalle",reviews:2195,type:"Mall",drive:"Yes",pop_w:39459},
+];
+
+const MEDIAN = 1306;
+const BK_RED = '#CC2200', BK_ORANGE = '#E8460A', BK_GOLD = '#F5A623';
+const INK = '#0F0E0D', INK3 = '#7A7570', PAPER2 = '#F2F1EC', PAPER3 = '#E8E6DF';
+
+// ── SCORE LOGIC ───────────────────────────────────────────────
+function locationScore(type, drive, pop) {
+  const driveScore = drive === 'yes' ? 55 : 0;
+  const typeScore = type === 'proximity' ? 30 : type === 'mall' ? 20 : 8;
+  const popScore = Math.round(((Math.min(pop, 220000) - 25000) / (220000 - 25000)) * 15);
+  return { total: driveScore + typeScore + popScore, drive: driveScore, type: typeScore, pop: popScore };
+}
+
+function estimateReviews(type, drive, pop) {
+  const b0 = 452, bDrive = 1395, bMall = 37, bHL = -377, bPop = 0.007;
+  const d = drive === 'yes' ? 1 : 0;
+  const mall = type === 'mall' ? 1 : 0;
+  const hl = type === 'highline' ? 1 : 0;
+  return Math.max(0, Math.round(b0 + bDrive*d + bMall*mall + bHL*hl + bPop*pop));
+}
+
+// Precompute scores for dataset
+DATA.forEach(r => {
+  const t = r.type === 'Proximity' ? 'proximity' : r.type === 'Mall' ? 'mall' : 'highline';
+  const d = r.drive === 'Yes' ? 'yes' : 'no';
+  r.score = locationScore(t, d, r.pop_w).total;
+});
+
+// ── TABLE ─────────────────────────────────────────────────────
+function scoreColor(s) {
+  if (s >= 75) return BK_ORANGE;
+  if (s >= 55) return BK_GOLD;
+  return INK3;
+}
+
+let tableData = [...DATA].sort((a,b) => b.reviews - a.reviews);
+let sortCol = 1, sortDir = -1;
+
+function renderTable(data) {
+  const tb = document.getElementById('tableBody');
+  tb.innerHTML = data.map(r => {
+    const typeBadge = r.type === 'Proximity' ? 'proximity' : r.type === 'Mall' ? 'mall' : 'highline';
+    const driveBadge = r.drive === 'Yes' ? 'yes' : 'no';
+    const sc = r.score;
+    const fillW = sc;
+    const col = scoreColor(sc);
+    return `<tr>
+      <td style="font-weight:500">${r.location}</td>
+      <td><strong style="font-family:'Syne',sans-serif;font-size:14px">${r.reviews.toLocaleString('it-IT')}</strong></td>
+      <td><span class="badge badge-${typeBadge}">${r.type}</span></td>
+      <td><span class="badge badge-${driveBadge}">${r.drive}</span></td>
+      <td>${r.pop_w.toLocaleString('it-IT')}</td>
+      <td>
+        <div class="score-pill">
+          <div class="score-bar-mini"><div class="score-bar-mini-fill" style="width:${fillW}%;background:${col}"></div></div>
+          <span style="font-family:'Syne',sans-serif;font-weight:600;font-size:13px;color:${col}">${sc}</span>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function sortTable(col) {
+  if (sortCol === col) sortDir *= -1; else { sortCol = col; sortDir = -1; }
+  const keys = ['location','reviews','type','drive','pop_w','score'];
+  tableData.sort((a,b) => {
+    const va = a[keys[col]], vb = b[keys[col]];
+    return typeof va === 'string' ? va.localeCompare(vb)*sortDir : (va-vb)*sortDir;
+  });
+  renderTable(tableData);
+}
+
+document.getElementById('tableSearch').addEventListener('input', function() {
+  const q = this.value.toLowerCase();
+  renderTable(tableData.filter(r => r.location.toLowerCase().includes(q)));
+});
+
+renderTable(tableData);
+
+// ── CHARTS ────────────────────────────────────────────────────
+const chartDefaults = {
+  plugins: { legend: { display: false }, tooltip: {
+    backgroundColor: INK, titleFont: { family: 'Syne', size: 13, weight: '600' },
+    bodyFont: { family: 'DM Sans', size: 12 }, padding: 10, cornerRadius: 6,
+    titleColor: '#fff', bodyColor: 'rgba(255,255,255,0.7)'
+  }},
+  scales: {
+    x: { grid: { color: 'rgba(0,0,0,0.04)', drawBorder: false }, ticks: { font: { family: 'DM Sans', size: 11 }, color: INK3 } },
+    y: { grid: { color: 'rgba(0,0,0,0.04)', drawBorder: false }, ticks: { font: { family: 'DM Sans', size: 11 }, color: INK3 } }
+  }
+};
+
+// Bar chart
+const sortedForBar = [...DATA].sort((a,b) => a.reviews - b.reviews);
+new Chart(document.getElementById('chartBar'), {
+  type: 'bar',
+  data: {
+    labels: sortedForBar.map(r => r.location),
+    datasets: [{
+      data: sortedForBar.map(r => r.reviews),
+      backgroundColor: sortedForBar.map(r => r.reviews >= MEDIAN ? BK_ORANGE : PAPER3),
+      borderRadius: 4, borderSkipped: false
+    }]
+  },
+  options: {
+    ...chartDefaults,
+    indexAxis: 'y',
+    responsive: true, maintainAspectRatio: false,
+    plugins: { ...chartDefaults.plugins,
+      annotation: { annotations: { line1: { type: 'line', xMin: MEDIAN, xMax: MEDIAN, borderColor: INK, borderWidth: 1, borderDash: [4,4] }}}
+    }
+  }
+});
+
+// Drive chart
+const driveMeans = [
+  DATA.filter(r=>r.drive==='Yes').reduce((s,r)=>s+r.reviews,0)/DATA.filter(r=>r.drive==='Yes').length,
+  DATA.filter(r=>r.drive==='No').reduce((s,r)=>s+r.reviews,0)/DATA.filter(r=>r.drive==='No').length
+];
+new Chart(document.getElementById('chartDrive'), {
+  type: 'bar',
+  data: {
+    labels: ['Con Drive-Thru','Senza Drive-Thru'],
+    datasets: [{ data: driveMeans.map(v => Math.round(v)),
+      backgroundColor: [BK_ORANGE, PAPER3], borderRadius: 6, borderSkipped: false }]
+  },
+  options: { ...chartDefaults, responsive: true, maintainAspectRatio: false,
+    plugins: { ...chartDefaults.plugins,
+      datalabels: false,
+      tooltip: { ...chartDefaults.plugins.tooltip, callbacks: { label: ctx => ' ' + Math.round(ctx.raw).toLocaleString('it-IT') + ' rec. medie' } }
+    }
+  }
+});
+
+// Type chart
+const types = ['Proximity','Mall','High - Line'];
+const typeMeans = types.map(t => {
+  const arr = DATA.filter(r=>r.type===t).map(r=>r.reviews);
+  return Math.round(arr.reduce((s,v)=>s+v,0)/arr.length);
+});
+new Chart(document.getElementById('chartType'), {
+  type: 'bar',
+  data: {
+    labels: types,
+    datasets: [{ data: typeMeans,
+      backgroundColor: [BK_ORANGE, '#3572BE', '#7A7570'], borderRadius: 6, borderSkipped: false }]
+  },
+  options: { ...chartDefaults, responsive: true, maintainAspectRatio: false }
+});
+
+// Scatter chart
+new Chart(document.getElementById('chartScatter'), {
+  type: 'scatter',
+  data: {
+    datasets: [{
+      data: DATA.map(r => ({ x: r.pop_w/1000, y: r.reviews })),
+      backgroundColor: DATA.map(r => r.drive==='Yes' ? BK_ORANGE + 'CC' : '#3572BECC'),
+      pointRadius: 5, pointHoverRadius: 7
+    }]
+  },
+  options: { ...chartDefaults, responsive: true, maintainAspectRatio: false,
+    plugins: { ...chartDefaults.plugins,
+      tooltip: { ...chartDefaults.plugins.tooltip,
+        callbacks: { label: ctx => {
+          const d = DATA[ctx.dataIndex];
+          return [` ${d.location}`, ` ${d.reviews.toLocaleString('it-IT')} recensioni`, ` Pop: ${Math.round(ctx.raw.x)}k`];
+        }}
+      }
+    },
+    scales: {
+      x: { ...chartDefaults.scales.x, title: { display: true, text: 'Pop. ponderata (migliaia)', font: { size: 11, family: 'DM Sans' }, color: INK3 } },
+      y: { ...chartDefaults.scales.y, title: { display: true, text: 'Recensioni', font: { size: 11, family: 'DM Sans' }, color: INK3 } }
+    }
+  }
+});
+
+// Residual chart
+const beta = [452.2, 1395.1, 37.2, -377.4, 0.007];
+function predict(r) {
+  const d = r.drive==='Yes'?1:0, mall=r.type==='Mall'?1:0, hl=r.type==='High - Line'?1:0;
+  return beta[0]+beta[1]*d+beta[2]*mall+beta[3]*hl+beta[4]*r.pop_w;
+}
+new Chart(document.getElementById('chartResidual'), {
+  type: 'scatter',
+  data: {
+    datasets: [
+      {
+        label: 'Osservazioni',
+        data: DATA.map(r => ({ x: Math.round(predict(r)), y: r.reviews })),
+        backgroundColor: '#3572BECC', pointRadius: 4
+      },
+      {
+        label: '45°',
+        data: [{x:0,y:0},{x:5500,y:5500}],
+        type: 'line', borderColor: INK, borderWidth: 1,
+        borderDash: [4,4], pointRadius: 0
+      }
+    ]
+  },
+  options: { ...chartDefaults, responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { ...chartDefaults.plugins.tooltip,
+      callbacks: { label: ctx => ctx.datasetIndex===0 ? ` ${DATA[ctx.dataIndex]?.location || ''}: previsto ${ctx.raw.x}, reale ${ctx.raw.y}` : '' }
+    }}
+  }
+});
+
+// ── SCORE CANVAS ──────────────────────────────────────────────
+let driveState = 'yes';
+
+function drawScoreArc(score) {
+  const canvas = document.getElementById('scoreCanvas');
+  const ctx = canvas.getContext('2d');
+  const cx = 110, cy = 110, r = 88;
+  ctx.clearRect(0, 0, 220, 220);
+
+  // Track
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, Math.PI * 0.75, Math.PI * 0.25, false);
+  ctx.strokeStyle = PAPER3;
+  ctx.lineWidth = 12;
+  ctx.lineCap = 'round';
+  ctx.stroke();
+
+  // Fill
+  const start = Math.PI * 0.75;
+  const end = start + (score / 100) * (Math.PI * 1.5);
+  const col = score >= 75 ? BK_ORANGE : score >= 55 ? BK_GOLD : INK3;
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, start, end, false);
+  ctx.strokeStyle = col;
+  ctx.lineWidth = 12;
+  ctx.lineCap = 'round';
+  ctx.stroke();
+
+  document.getElementById('scoreVal').textContent = score;
+  document.getElementById('scoreVal').style.color = col;
+}
+
+function scoreRatingText(score) {
+  if (score >= 80) return { t: 'Location eccellente', c: BK_ORANGE };
+  if (score >= 65) return { t: 'Buona location', c: BK_GOLD };
+  if (score >= 45) return { t: 'Location nella media', c: INK3 };
+  return { t: 'Location debole', c: '#CC2200' };
+}
+
+function calcScore() {
+  const type = document.getElementById('inpType').value;
+  const pop = parseInt(document.getElementById('inpPop').value);
+  const sc = locationScore(type, driveState, pop);
+  const total = sc.total;
+
+  drawScoreArc(total);
+  const { t, c } = scoreRatingText(total);
+  const rat = document.getElementById('scoreRating');
+  rat.textContent = t; rat.style.color = c;
+
+  document.getElementById('sbDrive').textContent = `+${sc.drive} pts`;
+  document.getElementById('sbType').textContent = `+${sc.type} pts`;
+  document.getElementById('sbPop').textContent = `+${sc.pop} pts`;
+
+  const est = estimateReviews(type, driveState, pop);
+  document.getElementById('estReviews').textContent = '~' + est.toLocaleString('it-IT');
+}
+
+function setDrive(val) {
+  driveState = val;
+  document.getElementById('driveYes').classList.toggle('active', val === 'yes');
+  document.getElementById('driveNo').classList.toggle('active', val === 'no');
+  calcScore();
+}
+
+function updatePopLabel() {
+  const v = parseInt(document.getElementById('inpPop').value);
+  document.getElementById('popLabel').textContent = (v/1000).toFixed(0) + '.000 abitanti';
+}
+
+calcScore();
+
+// ── NAV HIGHLIGHT ─────────────────────────────────────────────
+const sections = ['overview','dataset','analysis','regression','scorer'];
+const navLinks = document.querySelectorAll('nav a');
+window.addEventListener('scroll', () => {
+  let cur = 'overview';
+  sections.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && window.scrollY >= el.offsetTop - 100) cur = id;
+  });
+  navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#'+cur));
+}, { passive: true });
+</script>
+</body>
+</html>
